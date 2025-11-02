@@ -1,0 +1,90 @@
+openapi: 3.0.3
+info:
+  title: Orders Microservice
+  version: 0.0.1
+  description: Minimal Orders API with create, retrieve, and health check endpoints.
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /orders:
+    post:
+      summary: Create a new order
+      operationId: createOrder
+      requestBody:
+        description: Order to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderInput'
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Invalid input
+  /orders/{id}:
+    get:
+      summary: Retrieve order by ID
+      operationId: getOrderById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Found order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '404':
+          description: Order not found
+  /healthz:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+components:
+  schemas:
+    OrderInput:
+      type: object
+      required:
+        - customer_name
+        - item
+      properties:
+        customer_name:
+          type: string
+        item:
+          type: string
+    OrderResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        customer_name:
+          type: string
+        item:
+          type: string
+        created_at:
+          type: string
+          format: date-time
